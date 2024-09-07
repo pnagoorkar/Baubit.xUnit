@@ -1,8 +1,8 @@
 ﻿namespace Baubit.xUnit.Test.Fixture
 {
-    [ConfigurationSource(TestBroker.ConfigSource)]
+    [JsonConfigurationSource("testBroker")]
     public class TestBroker : ITestBroker
     {
-        public const string ConfigSource = $"~ExecutingAssemblyLocation~\\Fixture\\settings.json";
+
     }
 }

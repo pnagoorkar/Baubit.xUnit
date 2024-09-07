@@ -14,12 +14,21 @@ namespace Baubit.xUnit
 
         protected AFixture()
         {
-            var configSourceAttribute = typeof(TBroker).GetCustomAttribute<ConfigurationSourceAttribute>();
+            var configSourceAttribute = typeof(TBroker).GetCustomAttribute<JsonConfigurationSourceAttribute>();
             if (configSourceAttribute == null)
             {
-                throw new Exception($"{nameof(ConfigurationSourceAttribute)} not found on {typeof(TBroker).Name}{Environment.NewLine}The generic type parameter TBroker requires a {nameof(ConfigurationSourceAttribute)} to initialize test fixtures.");
+                throw new Exception($"{nameof(JsonConfigurationSourceAttribute)} not found on {typeof(TBroker).Name}{Environment.NewLine}The generic type parameter TBroker requires a {nameof(JsonConfigurationSourceAttribute)} to initialize test fixtures.");
             }
-            var fixtureConfiguration = new MetaConfiguration() { JsonUriStrings = [configSourceAttribute.Source] }.Load();
+            var fullyQualifiedResourceName = $"{typeof(TBroker).Namespace}.{configSourceAttribute.Source}.json";
+            var readResourceResult = Baubit.Resource
+                                           .Operations
+                                           .ReadEmbeddedResource
+                                           .RunAsync(new Resource.ReadEmbeddedResource.Context(fullyQualifiedResourceName, typeof(TBroker).Assembly))
+                                           .GetAwaiter()
+                                           .GetResult();
+            if (readResourceResult.Success != true) { throw new Exception("Unable to read Broker configuration source !"); }
+
+            var fixtureConfiguration = new MetaConfiguration() { RawJsonStrings = [readResourceResult.Value] }.Load();
             var testBrokerFactoryTypeName = fixtureConfiguration["testBrokerFactoryType"];
             var testBrokerFactoryMetaConfiguration = fixtureConfiguration.GetSection("testBrokerFactoryMetaConfiguration")
                                                                          .Get<MetaConfiguration>();
