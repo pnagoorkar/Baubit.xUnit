@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35208.52
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Baubit.xUnit", "Baubit.xUnit\Baubit.xUnit.csproj", "{340922DF-635A-4A64-86FD-8C2D028420D1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Baubit.xUnit", "Baubit.xUnit\Baubit.xUnit.csproj", "{340922DF-635A-4A64-86FD-8C2D028420D1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Baubit.xUnit.Test", "Baubit.xUnit.Test\Baubit.xUnit.Test.csproj", "{17AA95C7-2264-4E85-A77F-AFD569C48CF5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Baubit.xUnit.Test", "Baubit.xUnit.Test\Baubit.xUnit.Test.csproj", "{17AA95C7-2264-4E85-A77F-AFD569C48CF5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

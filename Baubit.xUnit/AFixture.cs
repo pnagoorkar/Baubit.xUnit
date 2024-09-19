@@ -20,20 +20,23 @@ namespace Baubit.xUnit
                 throw new Exception($"{nameof(JsonConfigurationSourceAttribute)} not found on {typeof(TBroker).Name}{Environment.NewLine}The generic type parameter TBroker requires a {nameof(JsonConfigurationSourceAttribute)} to initialize test fixtures.");
             }
             var fullyQualifiedResourceName = $"{typeof(TBroker).Namespace}.{configSourceAttribute.Source}.json";
+
             var readResourceResult = Baubit.Resource
-                                           .Operations
-                                           .ReadEmbeddedResource
-                                           .RunAsync(new Resource.ReadEmbeddedResource.Context(fullyQualifiedResourceName, typeof(TBroker).Assembly))
+                                           .Operations.ReadEmbeddedResourceAsync(new Resource.EmbeddedResourceReadContext(fullyQualifiedResourceName, typeof(TBroker).Assembly))
                                            .GetAwaiter()
                                            .GetResult();
-            if (readResourceResult.Success != true) { throw new Exception("Unable to read Broker configuration source !"); }
+
+            if (!readResourceResult.IsSuccess) { throw new Exception("Unable to read Broker configuration source !"); }
 
             var fixtureConfiguration = new MetaConfiguration() { RawJsonStrings = [readResourceResult.Value] }.Load();
             var testBrokerFactoryTypeName = fixtureConfiguration["testBrokerFactoryType"];
             var testBrokerFactoryMetaConfiguration = fixtureConfiguration.GetSection("testBrokerFactoryMetaConfiguration")
                                                                          .Get<MetaConfiguration>();
-            var testBrokerFactoryType = Type.GetType(testBrokerFactoryTypeName);
-            var testBrokerFactory = (ITestBrokerFactory)Activator.CreateInstance(testBrokerFactoryType, testBrokerFactoryMetaConfiguration);
+            var resolutionResult = Baubit.Store.Operations.ResolveTypeAsync(new Store.TypeResolutionContext(testBrokerFactoryTypeName)).GetAwaiter().GetResult();
+
+            if(!resolutionResult.IsSuccess) { throw new Exception("Unable to resolve test broker factory type name !"); }
+
+            var testBrokerFactory = (ITestBrokerFactory)Activator.CreateInstance(resolutionResult.Value, testBrokerFactoryMetaConfiguration)!;
 
             Broker = testBrokerFactory.LoadBroker<TBroker>();
         }
