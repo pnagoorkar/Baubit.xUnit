@@ -1,6 +1,7 @@
 ﻿using Baubit.Configuration;
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
+using Baubit.Store;
 
 namespace Baubit.xUnit
 {
@@ -21,10 +22,7 @@ namespace Baubit.xUnit
             }
             var fullyQualifiedResourceName = $"{typeof(TBroker).Namespace}.{configSourceAttribute.Source}.json";
 
-            var readResourceResult = Baubit.Resource
-                                           .Operations.ReadEmbeddedResourceAsync(new Resource.EmbeddedResourceReadContext(fullyQualifiedResourceName, typeof(TBroker).Assembly))
-                                           .GetAwaiter()
-                                           .GetResult();
+            var readResourceResult = typeof(TBroker).Assembly.ReadResource(fullyQualifiedResourceName).GetAwaiter().GetResult();
 
             if (!readResourceResult.IsSuccess) { throw new Exception("Unable to read Broker configuration source !"); }
 
@@ -32,7 +30,8 @@ namespace Baubit.xUnit
             var testBrokerFactoryTypeName = fixtureConfiguration["testBrokerFactoryType"];
             var testBrokerFactoryMetaConfiguration = fixtureConfiguration.GetSection("testBrokerFactoryMetaConfiguration")
                                                                          .Get<MetaConfiguration>();
-            var resolutionResult = Baubit.Store.Operations.ResolveTypeAsync(new Store.TypeResolutionContext(testBrokerFactoryTypeName)).GetAwaiter().GetResult();
+
+            var resolutionResult = TypeResolver.ResolveTypeAsync(testBrokerFactoryTypeName!).GetAwaiter().GetResult();
 
             if(!resolutionResult.IsSuccess) { throw new Exception("Unable to resolve test broker factory type name !"); }
 
