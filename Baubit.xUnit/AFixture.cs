@@ -28,6 +28,7 @@ namespace Baubit.xUnit
 
             var fixtureConfiguration = new MetaConfiguration() { RawJsonStrings = [readResourceResult.Value] }.Load();
             var testBrokerFactoryTypeName = fixtureConfiguration["testBrokerFactoryType"];
+
             var testBrokerFactoryMetaConfiguration = fixtureConfiguration.GetSection("testBrokerFactoryMetaConfiguration")
                                                                          .Get<MetaConfiguration>();
 
