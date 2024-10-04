@@ -1,5 +1,5 @@
 {
-  "testBrokerFactoryType": "Baubit.xUnit.TestBrokerFactory, Baubit.xUnit",
+  "testBrokerFactoryType": "Baubit.xUnit.Test.Fixture.TestBrokerFactory, Baubit.xUnit.Test",
   "testBrokerFactoryConfigurationSource": {
     "JsonUriStrings": []
   }
