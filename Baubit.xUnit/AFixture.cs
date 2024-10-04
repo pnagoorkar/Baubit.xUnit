@@ -2,7 +2,6 @@
 using System.Reflection;
 using Baubit.Store;
 using Baubit.DI;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Baubit.xUnit
 {
@@ -14,7 +13,7 @@ namespace Baubit.xUnit
             protected set;
         }
 
-        private RootModule rootModule;
+        private RootModule? rootModule;
         protected AFixture()
         {
             var configSourceAttribute = typeof(TBroker).GetCustomAttribute<JsonConfigurationSourceAttribute>();
@@ -30,17 +29,9 @@ namespace Baubit.xUnit
 
             var fixtureConfiguration = new ConfigurationSource() { RawJsonStrings = [readResourceResult.Value] }.Load();
 
-            rootModule = new RootModule(fixtureConfiguration);
+            var brokerFactory = fixtureConfiguration.AsAModule<ITestBrokerFactory>();
 
-            var services = new ServiceCollection();
-
-            services.AddSingleton<TBroker>();
-
-            rootModule.Load(services);
-
-            var serviceProvider = services.BuildServiceProvider();
-
-            Broker = serviceProvider.GetRequiredService<TBroker>();
+            Broker = brokerFactory.Resolve<TBroker>();
         }
 
         public virtual void Dispose()
