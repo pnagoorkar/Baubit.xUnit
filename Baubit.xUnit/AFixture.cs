@@ -26,17 +26,17 @@ namespace Baubit.xUnit
 
             if (!readResourceResult.IsSuccess) { throw new Exception("Unable to read Broker configuration source !"); }
 
-            var fixtureConfiguration = new MetaConfiguration() { RawJsonStrings = [readResourceResult.Value] }.Load();
+            var fixtureConfiguration = new ConfigurationSource() { RawJsonStrings = [readResourceResult.Value] }.Load();
             var testBrokerFactoryTypeName = fixtureConfiguration["testBrokerFactoryType"];
 
-            var testBrokerFactoryMetaConfiguration = fixtureConfiguration.GetSection("testBrokerFactoryMetaConfiguration")
-                                                                         .Get<MetaConfiguration>();
+            var testBrokerFactoryConfigurationSource = fixtureConfiguration.GetSection("testBrokerFactoryConfigurationSource")
+                                                                         .Get<ConfigurationSource>();
 
-            var resolutionResult = TypeResolver.ResolveTypeAsync(testBrokerFactoryTypeName!).GetAwaiter().GetResult();
+            var resolutionResult = TypeResolver.ResolveTypeAsync(testBrokerFactoryTypeName!, CancellationToken.None).GetAwaiter().GetResult();
 
             if(!resolutionResult.IsSuccess) { throw new Exception("Unable to resolve test broker factory type name !"); }
 
-            var testBrokerFactory = (ITestBrokerFactory)Activator.CreateInstance(resolutionResult.Value, testBrokerFactoryMetaConfiguration)!;
+            var testBrokerFactory = (ITestBrokerFactory)Activator.CreateInstance(resolutionResult.Value, testBrokerFactoryConfigurationSource)!;
 
             Broker = testBrokerFactory.LoadBroker<TBroker>();
         }

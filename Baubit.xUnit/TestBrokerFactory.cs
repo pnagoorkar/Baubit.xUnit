@@ -12,7 +12,7 @@ namespace Baubit.xUnit
 
     public class TestBrokerFactory : AModule<TestBrokerConfiguration>, ITestBrokerFactory
     {
-        public TestBrokerFactory(MetaConfiguration metaConfiguration) : base(metaConfiguration)
+        public TestBrokerFactory(ConfigurationSource configurationConfiguration) : base(configurationConfiguration)
         {
         }
 
