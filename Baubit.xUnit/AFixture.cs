@@ -1,7 +1,8 @@
 ﻿using Baubit.Configuration;
 using System.Reflection;
-using Microsoft.Extensions.Configuration;
 using Baubit.Store;
+using Baubit.DI;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Baubit.xUnit
 {
@@ -13,6 +14,7 @@ namespace Baubit.xUnit
             protected set;
         }
 
+        private RootModule rootModule;
         protected AFixture()
         {
             var configSourceAttribute = typeof(TBroker).GetCustomAttribute<JsonConfigurationSourceAttribute>();
@@ -27,18 +29,18 @@ namespace Baubit.xUnit
             if (!readResourceResult.IsSuccess) { throw new Exception("Unable to read Broker configuration source !"); }
 
             var fixtureConfiguration = new ConfigurationSource() { RawJsonStrings = [readResourceResult.Value] }.Load();
-            var testBrokerFactoryTypeName = fixtureConfiguration["testBrokerFactoryType"];
 
-            var testBrokerFactoryConfigurationSource = fixtureConfiguration.GetSection("testBrokerFactoryConfigurationSource")
-                                                                         .Get<ConfigurationSource>();
+            rootModule = new RootModule(fixtureConfiguration);
 
-            var resolutionResult = TypeResolver.ResolveTypeAsync(testBrokerFactoryTypeName!, CancellationToken.None).GetAwaiter().GetResult();
+            var services = new ServiceCollection();
 
-            if(!resolutionResult.IsSuccess) { throw new Exception("Unable to resolve test broker factory type name !"); }
+            services.AddSingleton<TBroker>();
 
-            var testBrokerFactory = (ITestBrokerFactory)Activator.CreateInstance(resolutionResult.Value, testBrokerFactoryConfigurationSource)!;
+            rootModule.Load(services);
 
-            Broker = testBrokerFactory.LoadBroker<TBroker>();
+            var serviceProvider = services.BuildServiceProvider();
+
+            Broker = serviceProvider.GetRequiredService<TBroker>();
         }
 
         public virtual void Dispose()
