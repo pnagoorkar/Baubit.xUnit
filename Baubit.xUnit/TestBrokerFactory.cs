@@ -7,10 +7,11 @@ namespace Baubit.xUnit
 {
     public sealed class TestBrokerFactory : ITestBrokerFactory
     {
-        RootModule rootModule;
+        public IConfiguration RootModuleConfiguration { get; init; }
+
         public TestBrokerFactory(IConfiguration rootModuleConfiguration)
         {
-            rootModule = new RootModule(rootModuleConfiguration);
+            RootModuleConfiguration = rootModuleConfiguration;
         }
         public TestBrokerFactory(ConfigurationSource configurationSource) : this(configurationSource.Load())
         {
@@ -20,7 +21,10 @@ namespace Baubit.xUnit
         {
             var services = new ServiceCollection();
             services.AddSingleton<TBroker>();
+
+            var rootModule = new RootModule(RootModuleConfiguration);
             rootModule.Load(services);
+
             return services.BuildServiceProvider().GetRequiredService<TBroker>();
         }
     }

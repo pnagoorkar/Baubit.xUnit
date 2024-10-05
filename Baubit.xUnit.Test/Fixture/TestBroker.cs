@@ -1,8 +1,7 @@
 ﻿namespace Baubit.xUnit.Test.Fixture
 {
-    [JsonConfigurationSource("testBroker")]
+    [EmbeddedJsonSources("Baubit.xUnit.Test;Fixture.testBroker.json")]
     public class TestBroker : ITestBroker
     {
-
     }
 }
