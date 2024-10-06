@@ -1,7 +1,7 @@
 {
   "type": "Baubit.xUnit.TestBrokerFactory, Baubit.xUnit",
   "parameters": {
-    "moduleConfiguration": {
+    "configuration": {
 
     }
   }

@@ -25,7 +25,7 @@ namespace Baubit.xUnit
             configurationSource.EmbeddedJsonResources = configSourceAttribute.Values;
 
             Broker = configurationSource.Load()
-                                        .AsAModule<ITestBrokerFactory>()
+                                        .As<ITestBrokerFactory>()
                                         .Resolve<TBroker>();
         }
 
