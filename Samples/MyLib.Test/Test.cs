@@ -15,6 +15,7 @@ namespace MyLib.Test
             Assert.NotNull(Broker);
             Assert.NotNull(Broker.MyComponent);
             Assert.NotNull(Broker.MyComponent.SomeString);
+
         }
     }
 }
