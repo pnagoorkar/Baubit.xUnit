@@ -20,8 +20,11 @@ jobs:
               if [ "$CHANGED_FILES" = ".circleci/config.yml" ]; then
                   echo "Only .circleci/config.yml was changed. Skipping build."
                   circleci-agent step halt
+              elif [ "$CHANGED_FILES" = "README.md" ]; then
+                  echo "Only README.md was changed. Skipping build."
+                  circleci-agent step halt
               else
-                  echo "Changes detected outside of .circleci/config.yml. Proceeding with build."
+                  echo "Changes detected outside of ignored files. Proceeding with build."
               fi
 
       # Step 2: Add github as a nuget package source
