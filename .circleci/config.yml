@@ -61,7 +61,7 @@ jobs:
             PROJECT_FILE="${SOLUTION_FOLDER}/${PROJECT_NAME}.csproj"
             
             YEAR=$(date +%Y)
-            WEEK=$(date +%V)
+            WEEK=$(date +%-V)
 
             # List all tags matching the pattern "v${YEAR}.${WEEK}.*"
             TAG_LIST=$(git tag -l "v${YEAR}.${WEEK}.*")
@@ -86,7 +86,9 @@ jobs:
             BUILD_TAG="v${CURRENT_VERSION}"
             echo "Current version tag - $BUILD_TAG"
 
-            dotnet pack ${PROJECT_FILE} --configuration Release -p:PackageVersion="${CURRENT_VERSION}" --output ./nupkgs --nowarn:9999
+            dotnet pack ${PROJECT_FILE} --configuration Release -p:PackageVersion="${CURRENT_VERSION}" --output ./nupkgs --nowarn:9999  --verbosity d
+
+            ls -R ./nupkgs
 
             dotnet nuget push ./nupkgs/${PROJECT_NAME}.${CURRENT_VERSION}.nupkg --source "github"
 
