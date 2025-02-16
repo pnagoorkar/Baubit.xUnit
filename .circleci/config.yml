@@ -9,9 +9,9 @@ jobs:
             password: $DOCKER_HUB_PASSWORD
     steps:     
       - checkout
-      # Step 1: Check for config.yml changes.
+      # Step 1: Check for ignored files.
       - run:
-          name: Check for config.yml changes
+          name: Check for ignored files
           command: |            
               # Capture the list of changed files
               CHANGED_FILES=$(git diff --name-only HEAD^ HEAD)
