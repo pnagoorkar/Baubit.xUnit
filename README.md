@@ -26,21 +26,16 @@ public class TestBroker : ITestBroker
 testBroker.json
 ```json
 {
-  "type": "Baubit.xUnit.TestBrokerFactory, Baubit.xUnit",
-  "parameters": {
-    "configuration": {
-      "modules": [
-        {
-          "type": "MyLib.MyModule, MyLib",
-          "parameters": {
-            "configuration": {
-              "myStringProperty": "some string value"
-            }
-          }
+  "modules": [
+    {
+      "type": "MyLib.MyModule, MyLib",
+      "parameters": {
+        "configuration": {
+          "myStringProperty": "some string value"
         }
-      ]
+      }
     }
-  }
+  ]
 }
 ```
 Test.cs
