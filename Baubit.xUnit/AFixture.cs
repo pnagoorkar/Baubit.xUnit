@@ -1,6 +1,7 @@
 ﻿using Baubit.Configuration;
 using System.Reflection;
 using Baubit.DI;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Baubit.xUnit
 {
@@ -24,9 +25,9 @@ namespace Baubit.xUnit
             var configurationSource = new ConfigurationSource();
             configurationSource.EmbeddedJsonResources = configSourceAttribute.Values;
 
-            Broker = configurationSource.Load()
-                                        .As<ITestBrokerFactory>()
-                                        .Resolve<TBroker>();
+            var services = new ServiceCollection();
+            services.AddSingleton<TBroker>();
+            Broker = services.AddFrom(configurationSource).BuildServiceProvider().GetRequiredService<TBroker>();
         }
 
         public virtual void Dispose()
