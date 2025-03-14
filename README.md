@@ -29,10 +29,8 @@ testBroker.json
   "modules": [
     {
       "type": "MyLib.MyModule, MyLib",
-      "parameters": {
-        "configuration": {
-          "myStringProperty": "some string value"
-        }
+      "configuration": {
+        "myStringProperty": "some string value"
       }
     }
   ]
