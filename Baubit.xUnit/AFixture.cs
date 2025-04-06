@@ -2,6 +2,7 @@
 using System.Reflection;
 using Baubit.DI;
 using Microsoft.Extensions.DependencyInjection;
+using Baubit.Traceability.Errors;
 
 namespace Baubit.xUnit
 {
@@ -27,7 +28,12 @@ namespace Baubit.xUnit
 
             var services = new ServiceCollection();
             services.AddSingleton<TBroker>();
-            Broker = services.AddFrom(configurationSource).BuildServiceProvider().GetRequiredService<TBroker>();
+            var configurationAddResult = services.AddFrom(configurationSource);
+            if (!configurationAddResult.IsSuccess)
+            {
+                throw new AggregateException(new CompositeError<IServiceCollection>(configurationAddResult).ToString());
+            }
+            Broker = configurationAddResult.Value.BuildServiceProvider().GetRequiredService<TBroker>();
         }
 
         public virtual void Dispose()
