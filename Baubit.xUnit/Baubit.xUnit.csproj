@@ -22,7 +22,7 @@
   <ItemGroup>
     <None Include="../README.md" Pack="true" PackagePath="." />
     <None Include="../LICENSE" Pack="true" PackagePath="." />
-    <PackageReference Include="Baubit" Version="2025.14.2" />
+    <PackageReference Include="Baubit" Version="2025.14.6" />
     <PackageReference Include="xunit.extensibility.core" Version="2.9.3" />
   </ItemGroup>
 
