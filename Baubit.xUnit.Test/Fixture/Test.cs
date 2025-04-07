@@ -2,7 +2,7 @@
 
 namespace Baubit.xUnit.Test.Fixture
 {
-    public class Test : AClassFixture<Fixture<TestBroker>, TestBroker>
+    public class Test : AClassFixture<TestBroker>
     {
         public Test(Fixture<TestBroker> fixture, ITestOutputHelper testOutputHelper, IMessageSink diagnosticMessageSink = null) : base(fixture, testOutputHelper, diagnosticMessageSink)
         {
