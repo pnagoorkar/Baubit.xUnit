@@ -18,4 +18,12 @@ namespace Baubit.xUnit
             DiagnosticMessageSink = diagnosticMessageSink;
         }
     }
+    public abstract class AClassFixture<TBroker> : AClassFixture<Fixture<TBroker>, TBroker> where TBroker : class, ITestBroker
+    {
+        protected AClassFixture(Fixture<TBroker> fixture, 
+                                ITestOutputHelper testOutputHelper, 
+                                IMessageSink diagnosticMessageSink = null) : base(fixture, testOutputHelper, diagnosticMessageSink)
+        {
+        }
+    }
 }
