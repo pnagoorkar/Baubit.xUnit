@@ -78,7 +78,7 @@ Make sure `testBroker.json` is marked as an embedded resource in your test proje
 #### 5. Write the Unit Test
 
 ```csharp
-public class MyComponentTests : AClassFixture<Fixture<TestBroker>, TestBroker>
+public class MyComponentTests : AClassFixture<TestBroker>
 {
     public MyComponentTests(Fixture<TestBroker> fixture,
                             ITestOutputHelper testOutputHelper,
