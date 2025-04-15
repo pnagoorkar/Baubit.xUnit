@@ -4,11 +4,11 @@ using Baubit.xUnit;
 
 namespace MyLib.Test
 {
-    [EmbeddedJsonSources("MyLib.Test;testBroker.json")]
-    public class TestBroker : ITestBroker
+    [EmbeddedJsonSources("MyLib.Test;context.json")]
+    public class Context : IContext
     {
         public MyComponent MyComponent { get; set; }
-        public TestBroker(MyComponent myComponent)
+        public Context(MyComponent myComponent)
         {
             MyComponent = myComponent;
         }

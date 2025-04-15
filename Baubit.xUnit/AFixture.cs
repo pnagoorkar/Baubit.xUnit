@@ -6,9 +6,9 @@ using Baubit.Traceability.Errors;
 
 namespace Baubit.xUnit
 {
-    public abstract class AFixture<TBroker> : IFixture<TBroker>, IDisposable where TBroker : class, ITestBroker
+    public abstract class AFixture<TContext> : IFixture<TContext>, IDisposable where TContext : class, IContext
     {
-        public TBroker Broker
+        public TContext Context
         {
             get;
             protected set;
@@ -16,24 +16,24 @@ namespace Baubit.xUnit
 
         protected AFixture()
         {
-            var configSourceAttribute = typeof(TBroker).GetCustomAttribute<EmbeddedJsonSourcesAttribute>();
+            var configSourceAttribute = typeof(TContext).GetCustomAttribute<EmbeddedJsonSourcesAttribute>();
 
             if (configSourceAttribute == null)
             {
-                throw new Exception($"{nameof(EmbeddedJsonSourcesAttribute)} not found on {typeof(TBroker).Name}{Environment.NewLine}The generic type parameter TBroker requires a {nameof(EmbeddedJsonSourcesAttribute)} to initialize test fixtures.");
+                throw new Exception($"{nameof(EmbeddedJsonSourcesAttribute)} not found on {typeof(TContext).Name}{Environment.NewLine}The generic type parameter TContext requires a {nameof(EmbeddedJsonSourcesAttribute)} to initialize test fixtures.");
             }
 
             var configurationSource = new ConfigurationSource();
             configurationSource.EmbeddedJsonResources = configSourceAttribute.Values;
 
             var services = new ServiceCollection();
-            services.AddSingleton<TBroker>();
+            services.AddSingleton<TContext>();
             var configurationAddResult = services.AddFrom(configurationSource);
             if (!configurationAddResult.IsSuccess)
             {
                 throw new AggregateException(new CompositeError<IServiceCollection>(configurationAddResult).ToString());
             }
-            Broker = configurationAddResult.Value.BuildServiceProvider().GetRequiredService<TBroker>();
+            Context = configurationAddResult.Value.BuildServiceProvider().GetRequiredService<TContext>();
         }
 
         public virtual void Dispose()

@@ -1,6 +1,6 @@
 ﻿namespace Baubit.xUnit
 {
-    public interface ITestBroker
+    public interface IContext
     {
     }
 }

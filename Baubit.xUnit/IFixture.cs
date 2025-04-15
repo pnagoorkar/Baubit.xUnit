@@ -1,7 +1,7 @@
 ﻿namespace Baubit.xUnit
 {
-    public interface IFixture<TBroker> where TBroker : class, ITestBroker
+    public interface IFixture<TContext> where TContext : class, IContext
     {
-        public TBroker Broker { get; }
+        public TContext Context { get; }
     }
 }

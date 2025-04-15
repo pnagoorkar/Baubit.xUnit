@@ -10,11 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Fixture\testBroker.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Fixture\testBroker.json">
+    <EmbeddedResource Include="Fixture\context.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
