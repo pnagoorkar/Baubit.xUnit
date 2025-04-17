@@ -1,9 +1,15 @@
-﻿using Baubit.Configuration;
+﻿
+using Baubit.Reflection;
+using Baubit.Testing;
 
 namespace Baubit.xUnit.Test.Fixture
 {
-    [EmbeddedJsonSources("Baubit.xUnit.Test;Fixture.context.json")]
+    [Source(EmbeddedJsonResources = ["Baubit.xUnit.Test;Fixture.context.json"])]
     public class Context : IContext
     {
+        public void Dispose()
+        {
+
+        }
     }
 }

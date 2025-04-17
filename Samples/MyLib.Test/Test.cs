@@ -1,4 +1,5 @@
-﻿using Baubit.xUnit;
+﻿using Baubit.Testing;
+using Baubit.xUnit;
 using FluentResults;
 using Xunit.Abstractions;
 
@@ -28,9 +29,16 @@ namespace MyLib.Test
 
     public class MyScenario : IScenario<Context>
     {
-        public Result Run(Context context)
+        public Result Run(Context context) => Result.Ok();
+
+        public Result Run() => Result.Ok();
+
+        public Task<Result> RunAsync(Context context) => Task.FromResult(Result.Ok());
+
+        public Task<Result> RunAsync() => Task.FromResult(Result.Ok());
+        public void Dispose()
         {
-            throw new NotImplementedException();
+
         }
     }
 }

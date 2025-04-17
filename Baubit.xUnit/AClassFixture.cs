@@ -1,6 +1,6 @@
 ﻿using Baubit.Configuration;
+using Baubit.Testing;
 using FluentResults;
-using Microsoft.Extensions.Configuration;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -20,13 +20,14 @@ namespace Baubit.xUnit
             TestOutputHelper = testOutputHelper;
             DiagnosticMessageSink = diagnosticMessageSink;
         }
-        protected Result ExecuteScenario<TScenario>(string embeddedJsonResource) where TScenario : IScenario<TContext>
+
+        protected Result ExecuteScenario<TScenario>(string embeddedJsonResource) where TScenario : class, IScenario<TContext>
         {
-            return ExecuteScenario<TScenario>(new ConfigurationSource { EmbeddedJsonResources = [embeddedJsonResource] });
+            return ExecuteScenario<TScenario>(new ConfigurationSource<TScenario> { EmbeddedJsonResources = [embeddedJsonResource] });
         }
-        protected Result ExecuteScenario<TScenario>(ConfigurationSource configurationSource) where TScenario : IScenario<TContext>
+        protected Result ExecuteScenario<TScenario>(ConfigurationSource<TScenario> configurationSource) where TScenario : class, IScenario<TContext>
         {
-            return configurationSource.Build().Bind(config => config.GetChildren().Any() ? Result.Try(() => config.Get<TScenario>()).Bind(scenario => scenario.Run(Context)) : Result.Ok());
+            return configurationSource.Load<TScenario>().Bind(scenario => scenario.Run(Context));
         }
     }
     public abstract class AClassFixture<TContext> : AClassFixture<Fixture<TContext>, TContext> where TContext : class, IContext
