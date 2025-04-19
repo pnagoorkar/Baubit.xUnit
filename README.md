@@ -110,7 +110,6 @@ public class MyScenario : IScenario<Context>
     {
         context.MyComponent.DoSomething(ScenarioSpecificData);
         return Result.OkIf(context.MyComponent.State == States.MySpecificState, new Error("Invalid component state after doing something"));
-        return Result.Ok();
     }
 
     public Result Run() => throw new NotImplementedException();
