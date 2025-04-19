@@ -1,4 +1,5 @@
 ﻿using Baubit.Testing;
+using Baubit.Traceability;
 
 namespace Baubit.xUnit
 {
@@ -12,7 +13,7 @@ namespace Baubit.xUnit
 
         protected AFixture()
         {
-            Context = Baubit.Reflection.ObjectLoader.Load<TContext>().Value;
+            Context = Baubit.Reflection.ObjectLoader.Load<TContext>().ThrowIfFailed().Value;
         }
 
         public virtual void Dispose()
