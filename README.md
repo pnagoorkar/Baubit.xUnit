@@ -134,7 +134,7 @@ public class MyComponentTests : AClassFixture<Context>
     [InlineData("MyLib.Test;Scenarios.scenario1.json")]
     [InlineData("MyLib.Test;Scenarios.scenario2.json")]
     [InlineData("MyLib.Test;Scenarios.scenario3.json")]
-    public void MyComponent_Should_Not_Be_Null()
+    public void MyComponent_ShouldBeInMySpecificStateAfterDoingSomething()
     {
         var result = ExecuteScenario<MyScenario>(embeddedJsonResource);
         var reasons = new List<IReason>();
