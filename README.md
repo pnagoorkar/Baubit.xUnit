@@ -39,28 +39,28 @@ public class MyComponent
 ```
 #### 2. [Add it](https://github.com/pnagoorkar/Baubit?tab=readme-ov-file#-defining-a-module) to the applications IoC container using a Baubit module.
 
-#### 3. Create a Test Broker
+#### 3. Create a Test Context
 
-A **test broker** is a custom class that provides access to all testable components registered in one or more modules. This enables validating component behavior in isolation.
+A **test context** is a custom class that provides access to all testable components registered in one or more modules. This enables validating component behavior in isolation.
 
 ```csharp
-[EmbeddedJsonSources("MyLib.Test;testBroker.json")]
-public class TestBroker : ITestBroker
+[Source(EmbeddedJsonResources = ["MyLib.Test;context.json"])]
+public class Context : IContext
 {
     public MyComponent MyComponent { get; set; }
 
-    public TestBroker(MyComponent myComponent)
+    public Context(MyComponent myComponent)
     {
         MyComponent = myComponent;
     }
 }
 ```
 
-An `[EmbeddedJsonSources]` attribute MUST be defined for the TestBroker. This allows the Baubit.xUnit framework to load modules relevant for testing
+A `[Source]` attribute MUST be defined for the Context. This allows the Baubit.xUnit framework to load modules relevant for testing
 
 #### 4. Configure Embedded Resource
 
-Make sure `testBroker.json` is marked as an embedded resource in your test project. Example content:
+Make sure `context.json` is marked as an embedded resource in your test project. Example content:
 
 ```json
 {
@@ -78,9 +78,9 @@ Make sure `testBroker.json` is marked as an embedded resource in your test proje
 #### 5. Write the Unit Test
 
 ```csharp
-public class MyComponentTests : AClassFixture<TestBroker>
+public class MyComponentTests : AClassFixture<Context>
 {
-    public MyComponentTests(Fixture<TestBroker> fixture,
+    public MyComponentTests(Fixture<Context> fixture,
                             ITestOutputHelper testOutputHelper,
                             IMessageSink diagnosticMessageSink = null)
         : base(fixture, testOutputHelper, diagnosticMessageSink)
@@ -90,14 +90,81 @@ public class MyComponentTests : AClassFixture<TestBroker>
     [Fact]
     public void MyComponent_Should_Not_Be_Null()
     {
-        Assert.NotNull(Broker);
-        Assert.NotNull(Broker.MyComponent);
-        Assert.NotNull(Broker.MyComponent.SomeString);
+        Assert.NotNull(Context);
+        Assert.NotNull(Context.MyComponent);
+        Assert.NotNull(Context.MyComponent.SomeString);
     }
 }
 ```
 
-The test class uses `Fixture<TestBroker>` to bootstrap the module and expose configured services. The `Broker` property provides access to the test broker instance, through which you can access and validate components, behaviors, and configurations.
+The test class uses `Fixture<Context>` to bootstrap the module and expose configured services. The `Context` property provides access to the test context instance, through which you can access and validate components, behaviors, and configurations.
+
+## Scenario Variance
+**Baubit.xUnit** supports scenario variance to test multiple scenarios using the same test method
+```cs
+public class MyScenario : IScenario<Context>
+{
+    public string ScenarioSpecificData { get; }
+
+    public Result Run(Context context)
+    {
+        context.MyComponent.DoSomething(ScenarioSpecificData);
+        return Result.OkIf(context.MyComponent.State == States.MySpecificState, new Error("Invalid component state after doing something"));
+    }
+
+    public Result Run() => throw new NotImplementedException();
+
+    public Task<Result> RunAsync(Context context) => throw new NotImplementedException();
+
+    public Task<Result> RunAsync() => throw new NotImplementedException();
+}
+```
+
+```cs
+public class MyComponentTests : AClassFixture<Context>
+{
+    public MyComponentTests(Fixture<Context> fixture,
+                            ITestOutputHelper testOutputHelper,
+                            IMessageSink diagnosticMessageSink = null)
+        : base(fixture, testOutputHelper, diagnosticMessageSink)
+    {
+    }
+
+    [Theory]
+    [InlineData("MyLib.Test;Scenarios.scenario1.json")]
+    [InlineData("MyLib.Test;Scenarios.scenario2.json")]
+    [InlineData("MyLib.Test;Scenarios.scenario3.json")]
+    public void MyComponent_ShouldBeInMySpecificStateAfterDoingSomething()
+    {
+        var result = ExecuteScenario<MyScenario>(embeddedJsonResource);
+        var reasons = new List<IReason>();
+        result.UnwrapReasons(reasons);
+        var reasonsString = string.Join(Environment.NewLine, reasons);
+        Assert.True(result.IsSuccess, reasonsString);
+    }
+}
+```
+You assertions will just not check if the scenario was successful, but also tell you the exact reasons behind the failure (as long as your components are capturing reasons in the call stack).
+
+Sample scenario json files
+```json
+//scenario1.json
+{
+    "scenarioSpecificData": "<specific data 1>"
+}
+```
+```json
+//scenario2.json
+{
+    "scenarioSpecificData": "<specific data 2>"
+}
+```
+```json
+//scenario3.json
+{
+    "scenarioSpecificData": "<specific data 3>"
+}
+```
 
 ## Resources
 

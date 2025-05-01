@@ -1,20 +1,43 @@
-﻿using Baubit.xUnit;
+﻿using Baubit.Testing;
+using Baubit.xUnit;
+using FluentResults;
 using Xunit.Abstractions;
 
 namespace MyLib.Test
 {
-    public class Test : AClassFixture<TestBroker>
+    public class Test : AClassFixture<Context>
     {
-        public Test(Fixture<TestBroker> fixture, ITestOutputHelper testOutputHelper, IMessageSink diagnosticMessageSink = null) : base(fixture, testOutputHelper, diagnosticMessageSink)
+        public Test(Fixture<Context> fixture, ITestOutputHelper testOutputHelper, IMessageSink diagnosticMessageSink = null) : base(fixture, testOutputHelper, diagnosticMessageSink)
         {
         }
 
         [Fact]
         public void TestMethod()
         {
-            Assert.NotNull(Broker);
-            Assert.NotNull(Broker.MyComponent);
-            Assert.NotNull(Broker.MyComponent.SomeString);
+            Assert.NotNull(Context);
+            Assert.NotNull(Context.MyComponent);
+            Assert.NotNull(Context.MyComponent.SomeString);
+
+        }
+        [Theory]
+        [InlineData("MyLib.Test;Scenarios.emptyScenario.json")]
+        public void AnotherTest(string embeddedJsonResource)
+        {
+            Assert.True(ExecuteScenario<MyScenario>(embeddedJsonResource).IsSuccess);
+        }
+    }
+
+    public class MyScenario : IScenario<Context>
+    {
+        public Result Run(Context context) => Result.Ok();
+
+        public Result Run() => Result.Ok();
+
+        public Task<Result> RunAsync(Context context) => Task.FromResult(Result.Ok());
+
+        public Task<Result> RunAsync() => Task.FromResult(Result.Ok());
+        public void Dispose()
+        {
 
         }
     }
