@@ -1,5 +1,7 @@
-﻿using Baubit.Testing;
+﻿using Baubit.DI;
+using Baubit.Testing;
 using Baubit.Traceability;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Baubit.xUnit
 {
@@ -13,7 +15,11 @@ namespace Baubit.xUnit
 
         protected AFixture()
         {
-            Context = Baubit.Reflection.ObjectLoader.Load<TContext>().ThrowIfFailed().Value;
+            Context = ComponentBuilder<TContext>.CreateFromSourceAttribute()
+                                                .Bind(compBuilder => compBuilder.WithRegistrationHandler(services => services.AddSingleton<TContext>()))
+                                                .Bind(compBuilder => compBuilder.Build())
+                                                .ThrowIfFailed()
+                                                .Value;
         }
 
         public virtual void Dispose()
