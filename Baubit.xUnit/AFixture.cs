@@ -1,14 +1,13 @@
-﻿using Baubit.Configuration;
-using System.Reflection;
-using Baubit.DI;
+﻿using Baubit.DI;
+using Baubit.Testing;
+using Baubit.Traceability;
 using Microsoft.Extensions.DependencyInjection;
-using Baubit.Traceability.Errors;
 
 namespace Baubit.xUnit
 {
-    public abstract class AFixture<TBroker> : IFixture<TBroker>, IDisposable where TBroker : class, ITestBroker
+    public abstract class AFixture<TContext> : IFixture<TContext>, IDisposable where TContext : class, IContext
     {
-        public TBroker Broker
+        public TContext Context
         {
             get;
             protected set;
@@ -16,24 +15,11 @@ namespace Baubit.xUnit
 
         protected AFixture()
         {
-            var configSourceAttribute = typeof(TBroker).GetCustomAttribute<EmbeddedJsonSourcesAttribute>();
-
-            if (configSourceAttribute == null)
-            {
-                throw new Exception($"{nameof(EmbeddedJsonSourcesAttribute)} not found on {typeof(TBroker).Name}{Environment.NewLine}The generic type parameter TBroker requires a {nameof(EmbeddedJsonSourcesAttribute)} to initialize test fixtures.");
-            }
-
-            var configurationSource = new ConfigurationSource();
-            configurationSource.EmbeddedJsonResources = configSourceAttribute.Values;
-
-            var services = new ServiceCollection();
-            services.AddSingleton<TBroker>();
-            var configurationAddResult = services.AddFrom(configurationSource);
-            if (!configurationAddResult.IsSuccess)
-            {
-                throw new AggregateException(new CompositeError<IServiceCollection>(configurationAddResult).ToString());
-            }
-            Broker = configurationAddResult.Value.BuildServiceProvider().GetRequiredService<TBroker>();
+            Context = ComponentBuilder<TContext>.CreateFromSourceAttribute()
+                                                .Bind(compBuilder => compBuilder.WithRegistrationHandler(services => services.AddSingleton<TContext>()))
+                                                .Bind(compBuilder => compBuilder.Build())
+                                                .ThrowIfFailed()
+                                                .Value;
         }
 
         public virtual void Dispose()

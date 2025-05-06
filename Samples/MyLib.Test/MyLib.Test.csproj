@@ -8,11 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="testBroker.json" />
+    <None Remove="Scenarios\emptyScenario.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="testBroker.json" />
+    <EmbeddedResource Include="Scenarios\emptyScenario.json" />
+    <EmbeddedResource Include="context.json" />
   </ItemGroup>
 
   <ItemGroup>
