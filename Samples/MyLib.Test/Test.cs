@@ -23,7 +23,9 @@ namespace MyLib.Test
         [InlineData("MyLib.Test;Scenarios.emptyScenario.json")]
         public void AnotherTest(string embeddedJsonResource)
         {
-            Assert.True(ExecuteScenario<MyScenario>(embeddedJsonResource).IsSuccess);
+            var result = ScenarioBuilder<MyScenario>.BuildFromEmbeddedJsonResources(embeddedJsonResource)
+                                                    .Bind(scenario => scenario.Run(Context));
+            Assert.True(result.IsSuccess);
         }
     }
 
